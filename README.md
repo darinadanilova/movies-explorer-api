@@ -4,6 +4,6 @@
 
 ## Ссылки на проект
 
-IP-адрес 51.250.4.38
+IP-адрес 158.160.46.239
 
-Backend https://api.danilovadarina.nomoredomains.xyz
+Backend - api.darinadanilova.nomoreparties.sbs
