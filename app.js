@@ -1,6 +1,5 @@
 require('dotenv').config();
 const express = require('express');
-const rateLimit = require('express-rate-limit');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const { errors } = require('celebrate');
@@ -10,32 +9,29 @@ const router = require('./routes');
 const {
   PORT,
   MONGODB,
+  limiter,
 } = require('./utils/config');
 const errorHandler = require('./middlewares/error');
 const { requestLogger, errorLogger } = require('./middlewares/logger');
+const ErrorServer = require('./utils/constants');
 
 const app = express();
 app.use(express.json());
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000,
-  max: 100,
-  standardHeaders: true,
-  legacyHeaders: false,
-});
 
 app.use(cors({
   credentials: true,
   origin: [
-    'http://darinadanilova.nomoredomains.xyz',
-    'http://api.darinadanilova.nomoredomains.xyz',
-    'https://darinadanilova.nomoredomains.xyz',
-    'https://api.darinadanilova.nomoredomains.xyz',
+    'http://darinadanilova.nomoreparties.sbs',
+    'http://api.darinadanilova.nomoreparties.sbs',
+    'https://darinadanilova.nomoreparties.sbs',
+    'https://api.darinadanilova.nomoreparties.sbs',
     'localhost:3000',
     'http://localhost:3000',
   ],
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
 }));
 
+app.use(requestLogger);
 app.use(limiter);
 app.use(helmet());
 
@@ -43,11 +39,9 @@ mongoose.connect(MONGODB, {
   useNewUrlParser: true,
 });
 
-app.use(requestLogger);
-
 app.get('/crash-test', () => {
   setTimeout(() => {
-    throw new Error('Сервер сейчас упадёт');
+    throw new Error(ErrorServer);
   }, 0);
 });
 

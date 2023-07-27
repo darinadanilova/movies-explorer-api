@@ -1,32 +1,24 @@
 const router = require('express').Router();
-const { celebrate, Joi } = require('celebrate');
-const userRoutes = require('./users');
 const auth = require('../middlewares/auth');
-const movieRoutes = require('./movies');
 const NotFoundError = require('../errors/NotFoundError');
 const { createUser } = require('../controllers/users');
-const { login } = require('../controllers/users');
+const { logIn, logOut } = require('../controllers/users');
+const { ErrorNotFound } = require('../utils/constants');
+const {
+  validationSignUp,
+  validationSignIn,
+} = require('../utils/validation');
 
-router.post('/signup', celebrate({
-  body: Joi.object().keys({
-    name: Joi.string().min(2).max(30),
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), createUser);
+router.post('/signup', validationSignUp, createUser);
 
-router.post('/signin', celebrate({
-  body: Joi.object().keys({
-    email: Joi.string().required().email(),
-    password: Joi.string().required(),
-  }),
-}), login);
+router.post('/signin', validationSignIn, logIn);
 
 router.use(auth);
 
-router.use('/users', userRoutes);
-router.use('/movies', movieRoutes);
+router.use('/signout', logOut);
+router.use('/users', require('./users'));
+router.use('/movies', require('./movies'));
 
-router.use('*', (req, res, next) => next(new NotFoundError('Запрашиваемый ресурс не найден')));
+router.use('*', (req, res, next) => next(new NotFoundError(ErrorNotFound)));
 
 module.exports = router;

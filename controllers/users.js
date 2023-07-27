@@ -6,6 +6,12 @@ const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
 const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
+const {
+  ErrorConflict,
+  ErrorBadRequest,
+  ErrorUnauthorized,
+  ErrorNotFound,
+} = require('../utils/constants');
 
 const createUser = (req, res, next) => {
   const {
@@ -20,26 +26,26 @@ const createUser = (req, res, next) => {
     }))
     .catch((err) => {
       if (err.code === 11000) {
-        next(new ConflictError('Пользователь с данным email уже зарегистрирован'));
+        next(new ConflictError(ErrorConflict));
       } else if (err.name === 'ValidationError') {
-        next(new BadRequestError('Вы ввели некорректные данные'));
+        next(new BadRequestError(ErrorBadRequest));
       } else {
         next(err);
       }
     });
 };
 
-const login = (req, res, next) => {
+const logIn = (req, res, next) => {
   const { email, password } = req.body;
   return User.findOne({ email })
     .select('+password')
-    .orFail(() => next(new UnauthorizedError('Вы ввели неверные email и пароль')))
+    .orFail(() => next(new UnauthorizedError(ErrorUnauthorized)))
     .then((user) => bcrypt.compare(password, user.password)
       .then((isValidUser) => {
         if (isValidUser) {
           return user;
         }
-        return next(new UnauthorizedError('Вы ввели неверные email и пароль'));
+        return next(new UnauthorizedError(ErrorUnauthorized));
       }))
     .then((user) => {
       const jwt = jsonWebToken.sign({
@@ -57,12 +63,12 @@ const login = (req, res, next) => {
 };
 
 const getUserById = (req, res, next) => {
-  User.findById(req.params.userId)
-    .orFail(() => next(new NotFoundError('Пользователь не найден')))
+  User.findById(req.user._id)
+    .orFail(() => next(new NotFoundError(ErrorNotFound)))
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError('Вы ввели некорректные данные'));
+        next(new BadRequestError(ErrorBadRequest));
       } else {
         next(err);
       }
@@ -75,16 +81,22 @@ const patchUser = (req, res, next) => {
     .then((user) => res.send({ data: user }))
     .catch((err) => {
       if (err.name === 'ValidationError') {
-        next(new BadRequestError('Вы ввели некорректные данные'));
-      } else {
-        next(err);
+        next(new BadRequestError(ErrorBadRequest));
+      } else if (err.code === 11000) {
+        next(new ConflictError(ErrorConflict));
       }
+      next(err);
     });
+};
+
+const logOut = (req, res) => {
+  res.clearCookie('jwt').send({ message: 'Выход' });
 };
 
 module.exports = {
   createUser,
-  login,
+  logIn,
   getUserById,
   patchUser,
+  logOut,
 };
