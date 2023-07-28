@@ -11,6 +11,7 @@ const {
   ErrorBadRequest,
   ErrorUnauthorized,
   ErrorNotFound,
+  Exit,
 } = require('../utils/constants');
 
 const createUser = (req, res, next) => {
@@ -90,7 +91,7 @@ const patchUser = (req, res, next) => {
 };
 
 const logOut = (req, res) => {
-  res.clearCookie('jwt').send({ message: 'Выход' });
+  res.clearCookie('jwt').send({ message: Exit });
 };
 
 module.exports = {

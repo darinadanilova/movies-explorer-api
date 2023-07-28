@@ -6,6 +6,8 @@ const ErrorConflict = 'Пользователь с данным email уже з�
 const ErrorUnauthorized = 'Вы ввели неверные email и пароль';
 const ErrorServer = 'Сервер сейчас упадёт';
 const ServerError = 'На сервере произошла ошибка';
+const UnauthorizedUser = 'Необходима авторизация';
+const Exit = 'Выход';
 
 module.exports = {
   urlReg,
@@ -16,4 +18,6 @@ module.exports = {
   ErrorUnauthorized,
   ErrorServer,
   ServerError,
+  UnauthorizedUser,
+  Exit,
 };
