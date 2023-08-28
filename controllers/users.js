@@ -56,6 +56,7 @@ const logIn = (req, res, next) => {
         ...user.toJSON(),
         jwt,
       };
+      console.log(data);
       res
         .cookie('jwt', jwt, {
           maxAge: 3600000 * 24 * 7,
