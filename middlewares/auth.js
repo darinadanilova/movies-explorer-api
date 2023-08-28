@@ -4,24 +4,21 @@ const { SECRET_KEY } = require('../utils/config');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const { UnauthorizedUser } = require('../utils/constants');
 
-const { NODE_ENV, JWT_SECRET } = process.env;
-
 const auth = (req, res, next) => {
-  const { authorization } = req.headers;
-  if (!authorization || !authorization.startsWith('Bearer ')) {
+  if (req.cookies.jwt) {
+    const token = req.cookies.jwt;
+    try {
+      const payload = jwt.verify(token, SECRET_KEY);
+      req.user = payload;
+    } catch (err) {
+      next(new UnauthorizedError(UnauthorizedUser));
+      return;
+    }
+  } else {
     next(new UnauthorizedError(UnauthorizedUser));
+    return;
   }
-  const token = authorization.replace('Bearer ', '');
-  let payload;
-
-  try {
-    payload = jwt.verify(token, NODE_ENV === 'production' ? JWT_SECRET : SECRET_KEY);
-  } catch (err) {
-    next(new UnauthorizedError(UnauthorizedUser));
-  }
-
-  req.user = payload;
-  return next();
+  next();
 };
 
 module.exports = auth;

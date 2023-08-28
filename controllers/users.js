@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
-const jsonWebToken = require('jsonwebtoken');dfbsf
+const jsonWebToken = require('jsonwebtoken');
 const { SECRET_KEY } = require('../utils/config');
-const User = require('../models/user');vsdfv
-const BadRequestError = require('../errors/BadRequestError');bsdfbda
+const User = require('../models/user');
+const BadRequestError = require('../errors/BadRequestError');
 const ConflictError = require('../errors/ConflictError');
-const NotFoundError = require('../errors/NotFoundError');vdsfvsd
+const NotFoundError = require('../errors/NotFoundError');
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const {
   ErrorConflict,
@@ -52,7 +52,17 @@ const logIn = (req, res, next) => {
       const jwt = jsonWebToken.sign({
         _id: user._id,
       }, SECRET_KEY, { expiresIn: '7d' });
-      res.send({ jwt });
+      const data = {
+        ...user.toJSON(),
+        jwt,
+      };
+      res
+        .cookie('jwt', jwt, {
+          maxAge: 3600000 * 24 * 7,
+          httpOnly: true,
+          sameSite: true,
+        })
+        .send({ data });
     })
     .catch(next);
 };
@@ -61,16 +71,12 @@ const getUserById = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => next(new NotFoundError(ErrorNotFound)))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {jknxkzilfdjnvjdfsg
-      f
-      v
-      d
-      vvdv
+    .catch((err) => {
       if (err.name === 'CastError') {
-        next(new BadRequestError(ErrorBadRequest));bvrtenbgsvdsf
-      } else {gfdbfdgbnd
-        next(err);sf 
-      }dfs
+        next(new BadRequestError(ErrorBadRequest));
+      } else {
+        next(err);
+      }
     });
 };
 
@@ -88,9 +94,14 @@ const patchUser = (req, res, next) => {
     });
 };
 
+const logOut = (req, res) => {
+  res.clearCookie('jwt').send({ message: Exit });
+};
+
 module.exports = {
   createUser,
   logIn,
   getUserById,
   patchUser,
+  logOut,
 };

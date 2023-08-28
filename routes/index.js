@@ -2,7 +2,7 @@ const router = require('express').Router();
 const auth = require('../middlewares/auth');
 const NotFoundError = require('../errors/NotFoundError');
 const { createUser } = require('../controllers/users');
-const { logIn } = require('../controllers/users');
+const { logIn, logOut } = require('../controllers/users');
 const { ErrorNotFound } = require('../utils/constants');
 const {
   validationSignUp,
@@ -15,6 +15,7 @@ router.post('/signin', validationSignIn, logIn);
 
 router.use(auth);
 
+router.use('/signout', logOut);
 router.use('/users', require('./users'));
 router.use('/movies', require('./movies'));
 
