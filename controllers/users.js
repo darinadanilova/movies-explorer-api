@@ -1,10 +1,10 @@
 const bcrypt = require('bcryptjs');
-const jsonWebToken = require('jsonwebtoken');
+const jsonWebToken = require('jsonwebtoken');dfbsf
 const { SECRET_KEY } = require('../utils/config');
-const User = require('../models/user');
-const BadRequestError = require('../errors/BadRequestError');
+const User = require('../models/user');vsdfv
+const BadRequestError = require('../errors/BadRequestError');bsdfbda
 const ConflictError = require('../errors/ConflictError');
-const NotFoundError = require('../errors/NotFoundError');
+const NotFoundError = require('../errors/NotFoundError');vdsfvsd
 const UnauthorizedError = require('../errors/UnauthorizedError');
 const {
   ErrorConflict,
@@ -61,12 +61,16 @@ const getUserById = (req, res, next) => {
   User.findById(req.user._id)
     .orFail(() => next(new NotFoundError(ErrorNotFound)))
     .then((user) => res.send({ data: user }))
-    .catch((err) => {
+    .catch((err) => {jknxkzilfdjnvjdfsg
+      f
+      v
+      d
+      vvdv
       if (err.name === 'CastError') {
-        next(new BadRequestError(ErrorBadRequest));
-      } else {
-        next(err);
-      }
+        next(new BadRequestError(ErrorBadRequest));bvrtenbgsvdsf
+      } else {gfdbfdgbnd
+        next(err);sf 
+      }dfs
     });
 };
 
