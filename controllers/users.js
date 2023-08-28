@@ -52,13 +52,17 @@ const logIn = (req, res, next) => {
       const jwt = jsonWebToken.sign({
         _id: user._id,
       }, SECRET_KEY, { expiresIn: '7d' });
+      const data = {
+        ...user.toJSON(),
+        jwt,
+      };
       res
         .cookie('jwt', jwt, {
           maxAge: 3600000 * 24 * 7,
           httpOnly: true,
           sameSite: true,
         })
-        .send({ data: user.toJSON() });
+        .send({ data });
     })
     .catch(next);
 };
