@@ -18,18 +18,7 @@ const ErrorServer = require('./utils/constants');
 const app = express();
 app.use(express.json());
 
-app.use(cors({
-  credentials: true,
-  origin: [
-    'http://darinadanilova.nomoreparties.sbs',
-    'http://api.darinadanilova.nomoreparties.sbs',
-    'https://darinadanilova.nomoreparties.sbs',
-    'https://api.darinadanilova.nomoreparties.sbs',
-    'localhost:3000',
-    'http://localhost:3000',
-  ],
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
-}));
+app.use(cors());
 
 app.use(requestLogger);
 app.use(limiter);
