@@ -52,17 +52,7 @@ const logIn = (req, res, next) => {
       const jwt = jsonWebToken.sign({
         _id: user._id,
       }, SECRET_KEY, { expiresIn: '7d' });
-      const data = {
-        ...user.toJSON(),
-        jwt,
-      };
-      res
-        .cookie('jwt', jwt, {
-          maxAge: 3600000 * 24 * 7,
-          httpOnly: true,
-          sameSite: true,
-        })
-        .send({ data });
+      res.send({ jwt });
     })
     .catch(next);
 };
@@ -94,14 +84,9 @@ const patchUser = (req, res, next) => {
     });
 };
 
-const logOut = (req, res) => {
-  res.clearCookie('jwt').send({ message: Exit });
-};
-
 module.exports = {
   createUser,
   logIn,
   getUserById,
   patchUser,
-  logOut,
 };
